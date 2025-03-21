@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pengurusan</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <!-- Poppins Font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js">
+    </script>
+</head>
+<body class="bg-green-50">
+
+    <!-- Navbar -->
+    <nav class="bg-green-700 text-white text-center py-4 text-2xl font-semibold shadow-md">
+        Form Pengurusan Surat
+    </nav>
+
+    <!-- Container -->
+    <div class="container mx-auto mt-6 p-6 bg-white shadow-lg rounded-lg max-w-lg">
+        <h2 class="text-2xl font-bold text-green-700 mb-6 text-center">Silakan Isi Form</h2>
+
+        <form id="pengurusanForm">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Nama</label>
+                <input type="text" id="nama" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Nomor WA</label>
+                <input type="text" id="nomor_wa" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Keperluan</label>
+                <input type="text" id="keperluan" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Foto KTP</label>
+                <input type="file" id="foto_ktp" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Foto KK</label>
+                <input type="file" id="foto_kk" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Surat Tambahan 1</label>
+                <input type="file" id="surat_tambahan1" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold">Surat Tambahan 2</label>
+                <input type="file" id="surat_tambahan2" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+
+            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">
+                Kirim Form
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const supabaseUrl = "https://nkzpjtocjiluknfojmvq.supabase.co"; // Ganti dengan URL Supabase Anda
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5renBqdG9jamlsdWtuZm9qbXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1OTA1MzUsImV4cCI6MjA1ODE2NjUzNX0.ZKMZ0F1PlJUgxofw3hHkCUYyDYMCuJIgS0NWO0PIhVk"; // Ganti dengan API Key Supabase Anda
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Ambil parameter keperluan dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const keperluan = urlParams.get("keperluan") || "Tidak Diketahui";
+        document.getElementById("keperluan").value = keperluan;
+
+        // Event saat form dikirim
+        document.getElementById("pengurusanForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const nama = document.getElementById("nama").value;
+            const nomor_wa = document.getElementById("nomor_wa").value;
+            const fotoKTP = document.getElementById("foto_ktp").files[0];
+            const fotoKK = document.getElementById("foto_kk").files[0];
+            const suratTambahan1 = document.getElementById("surat_tambahan1").files[0];
+            const suratTambahan2 = document.getElementById("surat_tambahan2").files[0];
+
+            if (!fotoKTP || !fotoKK || !suratTambahan1 || !suratTambahan2) {
+                alert("Harap unggah semua dokumen sebelum mengirim!");
+                return;
+            }
+
+            // Upload ke Supabase Storage
+            const uploadFile = async (file, fileName) => {
+                const { data, error } = await supabase.storage.from("uploads").upload(fileName, file);
+                if (error) {
+                    console.error("Upload gagal:", error.message);
+                    return null;
+                }
+                return data.path;
+            };
+
+            const fotoKTPPath = await uploadFile(fotoKTP, `ktp-${Date.now()}.jpg`);
+            const fotoKKPath = await uploadFile(fotoKK, `kk-${Date.now()}.jpg`);
+            const suratTambahan1Path = await uploadFile(suratTambahan1, `surat1-${Date.now()}.jpg`);
+            const suratTambahan2Path = await uploadFile(suratTambahan2, `surat2-${Date.now()}.jpg`);
+
+            if (!fotoKTPPath || !fotoKKPath || !suratTambahan1Path || !suratTambahan2Path) {
+                alert("Gagal mengunggah file, coba lagi.");
+                return;
+            }
+
+            // Simpan data ke Supabase Database
+            const { data, error } = await supabase.from("pengurusan").insert([
+                {
+                    nama: nama,
+                    nomor_wa: nomor_wa,
+                    keperluan: keperluan,
+                    foto_ktp: fotoKTPPath,
+                    foto_kk: fotoKKPath,
+                    surat_tambahan1: suratTambahan1Path,
+                    surat_tambahan2: suratTambahan2Path,
+                },
+            ]);
+
+            if (error) {
+                console.error("Gagal menyimpan data:", error.message);
+                alert("Gagal menyimpan data, coba lagi.");
+            } else {
+                alert("Form berhasil dikirim!");
+                window.location.href = "done.html"; // Redirect setelah sukses
+            }
+        });
+    </script>
+
+</body>
+</html>
