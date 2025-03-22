@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengurusan Surat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script type="module">
+    import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+
+    const supabase = createClient('https://nkzpjtocjiluknfojmvq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5renBqdG9jamlsdWtuZm9qbXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1OTA1MzUsImV4cCI6MjA1ODE2NjUzNX0.ZKMZ0F1PlJUgxofw3hHkCUYyDYMCuJIgS0NWO0PIhVk);
+
+    // Fungsi untuk meng-upload file ke Supabase Storage
+    async function uploadFile(file, path) {
+      const { data, error } = await supabase.storage
+        .from('uploads')
+        .upload(path, file);
+
+      if (error) {
+        console.error('Error uploading file:', error);
+        return null;
+      }
+      return data.path;
+    }
+
+    // Menangani pengiriman form
+    async function submitForm(event) {
+      event.preventDefault();
+
+      const nama = document.getElementById('nama').value;
+      const nomor_wa = document.getElementById('nomor_wa').value;
+      const keperluan = document.getElementById('keperluan').value;
+
+      const fileKTP = document.getElementById('foto_ktp').files[0];
+      const fileKK = document.getElementById('foto_kk').files[0];
+      const fileSurat1 = document.getElementById('surat_tambahan1').files[0];
+      const fileSurat2 = document.getElementById('surat_tambahan2').files[0];
+
+      // Upload file dan simpan path-nya
+      const fotoKTPPath = await uploadFile(fileKTP, `foto_ktp/${fileKTP.name}`);
+      const fotoKKPath = await uploadFile(fileKK, `foto_kk/${fileKK.name}`);
+      const surat1Path = await uploadFile(fileSurat1, `surat_tambahan1/${fileSurat1.name}`);
+      const surat2Path = await uploadFile(fileSurat2, `surat_tambahan2/${fileSurat2.name}`);
+
+      // Menyimpan data form ke Supabase
+      const { data, error } = await supabase
+        .from('pengurusan')
+        .insert([
+          {
+            nama,
+            nomor_wa,
+            keperluan,
+            foto_ktp: fotoKTPPath,
+            foto_kk: fotoKKPath,
+            surat_tambahan1: surat1Path,
+            surat_tambahan2: surat2Path
+          }
+        ]);
+
+      if (error) {
+        console.error('Error inserting form data:', error);
+      } else {
+        alert('Form berhasil dikirim!');
+        // Reset form setelah berhasil mengirim
+        document.getElementById('form-pengurusan').reset();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('form-pengurusan');
+      form.addEventListener('submit', submitForm);
+    });
+  </script>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+</head>
+<body class="bg-green-50 font-poppins">
+
+  <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+    <h1 class="text-3xl font-bold text-center text-green-600 mb-6">Pengurusan Surat</h1>
+
+    <form id="form-pengurusan" class="space-y-6">
+      <div>
+        <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
+        <input type="text" id="nama" name="nama" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+      
+      <div>
+        <label for="nomor_wa" class="block text-sm font-medium text-gray-700">Nomor WhatsApp</label>
+        <input type="text" id="nomor_wa" name="nomor_wa" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+
+      <div>
+        <label for="keperluan" class="block text-sm font-medium text-gray-700">Keperluan</label>
+        <input type="text" id="keperluan" name="keperluan" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+
+      <div>
+        <label for="foto_ktp" class="block text-sm font-medium text-gray-700">Foto KTP</label>
+        <input type="file" id="foto_ktp" name="foto_ktp" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+
+      <div>
+        <label for="foto_kk" class="block text-sm font-medium text-gray-700">Foto KK</label>
+        <input type="file" id="foto_kk" name="foto_kk" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+
+      <div>
+        <label for="surat_tambahan1" class="block text-sm font-medium text-gray-700">Surat Tambahan 1</label>
+        <input type="file" id="surat_tambahan1" name="surat_tambahan1" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+
+      <div>
+        <label for="surat_tambahan2" class="block text-sm font-medium text-gray-700">Surat Tambahan 2</label>
+        <input type="file" id="surat_tambahan2" name="surat_tambahan2" class="w-full p-3 border border-gray-300 rounded-lg" required>
+      </div>
+
+      <button type="submit" class="w-full p-3 bg-green-600 text-white font-semibold rounded-lg">Kirim Pengurusan</button>
+    </form>
+  </div>
+
+</body>
+</html>
