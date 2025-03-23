@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akses Ditolak</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #047857;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Popup */
+    .popup {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 350px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    /* Animasi muncul */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  
+  <script>
+    // Redirect otomatis ke index.html setelah 5 detik
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 5000);
+  </script>
+</head>
+<body>
+
+  <!-- Popup Himbauan -->
+  <div class="popup">
+    <h1 class="text-3xl font-bold text-red-600">Akses Ditolak!</h1>
+    <p class="text-gray-700 mt-2">Dashboard Admin hanya dapat diakses melalui Laptop atau Komputer.</p>
+    <p class="text-gray-700 mt-2">Anda akan dialihkan ke halaman utama dalam <span id="countdown">5</span> detik.</p>
+  </div>
+
+  <script>
+    // Animasi hitung mundur sebelum redirect
+    let count = 5;
+    const countdownEl = document.getElementById("countdown");
+
+    setInterval(() => {
+      count--;
+      countdownEl.textContent = count;
+    }, 1000);
+  </script>
+
+</body>
+</html>
