@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrasi - PPMTB</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-green-50 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-green-700 text-white py-3 text-center text-base font-bold shadow-md">
+        LAYANAN ADMINISTRASI TELADAN BARAT
+    </nav>
+    
+    <!-- Navbar Kedua dengan Logo -->
+<nav class="bg-green-600 py-2 shadow-md flex justify-center items-center space-x-2">
+    <img src="https://files.catbox.moe/nryt6l.png" alt="Logo 1" class="h-12">
+    <img src="https://files.catbox.moe/yips7h.png" alt="Logo 2" class="h-11">
+        <img src="https://files.catbox.moe/9e0wqv.png" alt="Logo 2" class="h-8">
+</nav>
+
+
+    <div class="container mx-auto px-4 py-6 flex-grow">
+
+<!-- Ucapan Selamat Datang -->
+<div class="bg-green-600 text-white p-6 rounded-lg text-center mb-6 shadow-md">
+    <h2 class="text-2xl font-bold mb-2">Selamat Datang di Layanan Administrasi Teladan Barat</h2>
+    <p>Silakan memilih layanan untuk mempermudah pengurusan administrasi Anda.</p>
+</div>
+
+<!-- Pemberitahuan Penting -->
+<div class="bg-orange-500 bg-opacity-90 text-white p-6 rounded-lg text-center mb-6 shadow-md">
+    <h2 class="text-xl font-bold mb-2">⚠️ PENTING!</h2>
+    <p class="mb-4">Harap melihat video panduan berikut sebelum mengisi formulir administrasi.</p>
+
+<!-- Video Panduan -->
+<div class="flex justify-center">
+    <video controls class="w-full max-w-2xl rounded-lg shadow-lg">
+        <source src="https://serveranda.com/video-panduan.mp4" type="video/mp4">
+        Browser Anda tidak mendukung video.
+    </video>
+</div>
+</div>
+
+<!-- Div Baru untuk Foto -->
+        <div class="bg-green-600 p-6 rounded-lg text-center mt-6 shadow-md">
+            <p class="text-lg font-bold text-white">Anda perlu bantuan? Mohon hubungi Kepala Lingkungan anda!</p>
+            <img src="https://files.catbox.moe/66wdq9.png" alt="Foto Kepala Lingkungan" class="mx-auto mt-4 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
+        </div>
+        <br>
+
+
+        <!-- Daftar Layanan -->
+        <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Layanan 1 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Pernyataan Kosong</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Anda dapat mengunduh template Surat Pernyataan Kosong yang dapat Anda print untuk pengurusan surat-surat.
+                </p>
+                <a href="SKKTEBAR.docx" download class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Download
+                </a>
+            </div>
+
+            <!-- Layanan 2 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Keterangan Domisili Usaha</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong>  KTP pemilik usaha, KK pemilik usaha, Foto tempat usaha, Surat Pernyataan yang ditandatangani diatas materai 10.000 diketahui oleh Kepala Lingkungan dan 2 (dua) orang saksi, dan KTP 2 (dua) orang saksi.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Keterangan Domisili Usaha" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 3 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Keterangan Domisili PT/CV/Yayasan</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong>  KTP penanggungjawab, KK penanggungjawab, Akta Pendirian, Foto plank PT/CV/Yayasan, Surat Pernyataan, Surat Pernyataan yang ditandatangani diatas materai 10.000 diketahui oleh Kepala Lingkungan dan 2 (dua) orang saksi, dan KTP 2 (dua) orang saksi.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Keterangan Domisili PT/CV/Yayasan" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 4 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Pengantar Nikah / NA</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong>  KTP, KTP dan KK Orang Tua, Pasfoto 3x4 (2 lembar), Surat Pernyataan yang ditandatangani diatas materai 10.000 diketahui oleh Kepala Lingkungan dan 2 (dua) orang saksi, dan KTP 2 (dua) orang saksi.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Pengantar Nikah / NA" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 5 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Keterangan Domisili Sementara</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong>  KTP, KK, Surat Pengantar dari daerah asal, Surat Pernyataan yang ditandatangani diatas materai 10.000 diketahui oleh Kepala Lingkungan dan 2 (dua) orang saksi, dan KTP 2 (dua) orang saksi.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Keterangan Domisili Sementara" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 6 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Keterangan Kematian</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong>  KTP yang meninggal, KK yang meninggal, Foto nisan kuburan, Surat Pernyataan yang ditandatangani diatas materai 10.000 diketahui oleh Kepala Lingkungan dan 2 (dua) orang saksi, dan KTP 2 (dua) orang saksi.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Keterangan Kematian" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 7 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Pernyataan Ahli Waris</h2>
+<p class="text-gray-600 text-sm flex-grow">
+                    <strong>Untuk pengurusan dibutuhkan:</strong>  
+                    Fotocopy surat kematian di legalisir (rangkap 2), Fotocopy surat nikah di legalisir (rangkap 2),  
+                    Fotocopy warna KTP seluruh ahli waris (rangkap 2), Fotocopy KK seluruh ahli waris (rangkap 2),  
+                    Fotocopy ijazah/akte lahir seluruh ahli waris (rangkap 2), Fotocopy KTP 2 (dua) orang saksi (rangkap 2),  
+                    Fotocopy KK keluarga 2 (dua) orang saksi (rangkap 2), Pas foto seluruh ahli waris berwarna ukuran 2x3 (1 lembar),  
+                    Materai 10.000, Map 2 buah.  
+                    <br><br>
+                    <strong>Jika ada anak salah satu ahli waris meninggal dunia, wajib melampirkan:</strong>  
+                    Fotocopy surat kematian (rangkap 2), Fotocopy surat pernyataan ahli waris di legalisir (rangkap 2),  
+                    Fotocopy KTP anak ahli waris (rangkap 2), Fotocopy KK anak ahli waris (rangkap 2),  
+                    Fotocopy ijazah/akte lahir anak ahli waris (rangkap 2).  
+                    <br><br>
+                    <strong>Saat penandatanganan:</strong>  
+                    Seluruh ahli waris harus hadir. Jika ada anak ahli waris yang tinggal di luar daerah,  
+                    dapat mengirimkan berkas dan difoto menggunakan GPS serta melampirkan fotocopy bukti pengiriman.  
+                    Berkas yang tidak memiliki barcode wajib dilegalisir oleh pejabat terkait.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Pernyataan Ahli Waris" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 8 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Keterangan Lainnya</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong>  KTP, KK, Surat Pernyataan yang ditandatangani diatas materai 10.000 diketahui oleh Kepala Lingkungan dan 2 (dua) orang saksi, dan KTP 2 (dua) orang saksi.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Keterangan Lainnya" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+
+            <!-- Layanan 9 -->
+            <div class="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition flex flex-col h-full">
+                <h2 class="text-green-700 font-semibold text-lg mb-2">Surat Pengurusan Persetujuan Bangunan Gedung (PBG)</h2>
+                <p class="text-gray-600 text-sm flex-grow">
+                    <strong>Anda dapat menyiapkan :</strong> KTP pemilik tanah, Surat atau akta yang dilegalisir, Denah atau gambar bangunan, PBB tahun berjalan, Surat permohonan dari yang bersangkutan. Jika surat tanah berupa akta camat maka diharuskan untuk melampirkan surat silang sengketa.
+                </p>
+                <a href="pengurusan.html?keperluan=Surat Pengurusan Persetujuan Bangunan Gedung" class="mt-3 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
+                   Pengurusan
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
