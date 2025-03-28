@@ -57,6 +57,24 @@
         tableBody.appendChild(row);
       });
     });
+        // Tambahkan event listener untuk mendeteksi perubahan pada tabel "pengurusan"
+    supabase
+      .channel('pengurusan-changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pengurusan' }, payload => {
+        console.log('Data baru masuk:', payload);
+        showNotification(payload.new);
+      })
+      .subscribe();
+
+    function showNotification(data) {
+      // Menampilkan popup notifikasi
+      alert(`Data baru masuk! \nNama: ${data.nama} \nKeperluan: ${data.keperluan}`);
+      
+      // Memutar suara notifikasi
+      const audio = new Audio('https://www.myinstants.com/media/sounds/tuturu.mp3');
+      audio.play();
+    }
+  });
   </script>
 
   <script>
