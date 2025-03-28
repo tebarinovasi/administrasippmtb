@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin PPMTB</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  </script>
   <script src="https://cdn.tailwindcss.com">
   </script>
 
@@ -59,6 +57,22 @@
         tableBody.appendChild(row);
       });
     });
+    
+    supabase
+        .channel('pengurusan-changes')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pengurusan' }, payload => {
+          console.log('Data baru masuk:', payload);
+          showNotification(payload.new);
+        })
+        .subscribe();
+    });
+
+    function showNotification(data) {
+      alert(`Data baru masuk! \nNama: ${data.nama} \nKeperluan: ${data.keperluan}`);
+      
+      const audio = new Audio('https://www.myinstants.com/media/sounds/tuturu.mp3');
+      audio.play();
+    }
   </script>
 
   <script>
@@ -161,27 +175,5 @@
     </div>
   </div>
   
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const SUPABASE_URL = 'https://nkzpjtocjiluknfojmvq.supabase.co';
-      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5renBqdG9jamlsdWtuZm9qbXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1OTA1MzUsImV4cCI6MjA1ODE2NjUzNX0.ZKMZ0F1PlJUgxofw3hHkCUYyDYMCuJIgS0NWO0PIhVk';
-      const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-      supabase
-        .channel('pengurusan-changes')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pengurusan' }, payload => {
-          console.log('Data baru masuk:', payload);
-          showNotification(payload.new);
-        })
-        .subscribe();
-
-      function showNotification(data) {
-        alert(`Data baru masuk! \nNama: ${data.nama} \nKeperluan: ${data.keperluan}`);
-        
-        const audio = new Audio('https://www.myinstants.com/media/sounds/tuturu.mp3');
-        audio.play();
-      }
-    });
-  </script>
 </body>
 </html>
