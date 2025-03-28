@@ -279,15 +279,18 @@ let lastRefreshTime = null;
               </a>
             </td>
             <td class="px-4 py-3 text-center">
-              ${item.surat_tambahan1}
-                <a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan1}" class="text-blue-600 hover:text-blue-800 transition" target="_blank">
-                  <i class="fas fa-file-alt text-lg"></i>
-                </a>
-            </td>
-            <td class="px-4 py-3 text-center">
-              ${item.surat_tambahan2}
-                <a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan2}" class="text-blue-600 hover:text-blue-800 transition" target="_blank">
-                  <i class="fas fa-file-alt text-lg"></i>
+              ${item.surat_tambahan1 ? `
+                  <a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan1}" class="text-blue-600 hover:text-blue-800 transition" target="_blank">
+                    <i class="fas fa-file-alt text-lg"></i>
+                  </a>
+                ` : '-'}
+              </td>
+              <td class="px-4 py-3 text-center">
+                ${item.surat_tambahan2 ? `
+                  <a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan2}" class="text-blue-600 hover:text-blue-800 transition" target="_blank">
+                    <i class="fas fa-file-alt text-lg"></i>
+                  </a>
+                ` : '-'}
                 </a>
             </td>
               <td class="px-4 py-3 text-center text-gray-600 text-sm">
