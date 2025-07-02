@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Pengurusan Surat Online - PPMTB</title>
+    
+    <!-- Menggunakan font Inter untuk tampilan yang lebih modern dan bersih -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Konfigurasi kustom untuk Tailwind CSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Skema warna hijau dan hitam sesuai permintaan
+                        primary: {
+                            '50': '#f0fdf4',
+                            '100': '#dcfce7',
+                            '200': '#bbf7d0',
+                            '300': '#86efac',
+                            '400': '#4ade80',
+                            '500': '#22c55e',
+                            '600': '#16a34a',
+                            '700': '#15803d',
+                            '800': '#166534',
+                            '900': '#14532d',
+                            '950': '#052e16',
+                        },
+                        dark: {
+                            '900': '#0D1117', // Latar belakang utama
+                            '800': '#161B22', // Latar belakang elemen
+                            '700': '#21262D', // Border
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom styling untuk scrollbar agar sesuai dengan tema gelap */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #21262D;
+            border-radius: 10px;
+            border: 2px solid #0D1117;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #16a34a;
+        }
+
+        /* Styling untuk input file kustom */
+        .file-input-label {
+            transition: all 0.2s ease-in-out;
+        }
+        .file-input-label:hover {
+            border-color: #22c55e;
+            background-color: rgba(34, 197, 94, 0.05);
+        }
+        .file-input-label.file-chosen {
+            border-color: #22c55e;
+        }
+        
+        /* Styling untuk modal popup */
+        .modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-300 font-sans antialiased flex items-center justify-center min-h-screen p-4">
+
+    <!-- Form Container -->
+    <div id="form-wrapper" class="w-full max-w-4xl bg-dark-800 border border-dark-700 rounded-2xl shadow-2xl shadow-dark-900/50">
+        <div class="p-6 md:p-10">
+            <div class="flex items-start space-x-4">
+                 <!-- Ikon Informasi -->
+                <div class="flex-shrink-0">
+                    <svg class="w-8 h-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Petunjuk Pengisian</h3>
+                    <p class="text-gray-400 mt-1">
+                        Pastikan semua data diisi dengan benar. Unggah file dalam format <span class="font-semibold text-primary-400">.jpg, .jpeg,</span> atau <span class="font-semibold text-primary-400">.png</span> dengan ukuran maksimal 5MB per file.
+                    </p>
+                </div>
+            </div>
+
+            <hr class="border-dark-700 my-8">
+
+            <form id="form-pengurusan" class="space-y-8">
+                <!-- Grid untuk layout responsif -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <!-- Nama Lengkap -->
+                    <div>
+                        <label for="nama" class="block text-sm font-medium text-gray-300 mb-2">Nama Lengkap (Sesuai KTP)</label>
+                        <input type="text" id="nama" name="nama" required class="w-full bg-dark-900 border border-dark-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" placeholder="Contoh: Budi Santoso">
+                    </div>
+
+                    <!-- Nomor WhatsApp -->
+                    <div>
+                        <label for="nomor_wa" class="block text-sm font-medium text-gray-300 mb-2">Nomor WhatsApp Aktif</label>
+                        <input type="tel" id="nomor_wa" name="nomor_wa" required class="w-full bg-dark-900 border border-dark-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" placeholder="Contoh: 081234567890">
+                    </div>
+
+                    <!-- Keperluan (colspan-2 untuk full width) -->
+                    <div class="md:col-span-2">
+                        <label for="keperluan" class="block text-sm font-medium text-gray-300 mb-2">Keperluan Pengurusan</label>
+                        <input type="text" id="keperluan" name="keperluan" required readonly class="w-full bg-dark-700 border border-dark-700 text-gray-400 rounded-lg px-4 py-3 cursor-not-allowed" placeholder="Akan terisi otomatis">
+                    </div>
+
+                    <!-- Unggah Dokumen -->
+                    <div class="md:col-span-2">
+                        <h4 class="text-md font-semibold text-white mb-4 mt-4">Unggah Dokumen</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Foto KTP -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Foto KTP <span class="text-red-400">*</span></label>
+                                <label for="foto_ktp" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-dark-700 border-dashed rounded-lg cursor-pointer bg-dark-900">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                                        <p class="mb-2 text-sm text-gray-400"><span class="font-semibold text-primary-400">Klik untuk unggah</span></p>
+                                        <p class="text-xs text-gray-500 file-name">Wajib diisi</p>
+                                    </div>
+                                    <input id="foto_ktp" type="file" class="hidden" required accept="image/jpeg, image/png, image/jpg">
+                                </label>
+                            </div>
+                            <!-- Foto KK -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Foto Kartu Keluarga (KK) <span class="text-red-400">*</span></label>
+                                <label for="foto_kk" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-dark-700 border-dashed rounded-lg cursor-pointer bg-dark-900">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                                        <p class="mb-2 text-sm text-gray-400"><span class="font-semibold text-primary-400">Klik untuk unggah</span></p>
+                                        <p class="text-xs text-gray-500 file-name">Wajib diisi</p>
+                                    </div>
+                                    <input id="foto_kk" type="file" class="hidden" required accept="image/jpeg, image/png, image/jpg">
+                                </label>
+                            </div>
+                            <!-- Surat Tambahan 1 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Surat Tambahan 1</label>
+                                <label for="surat_tambahan1" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-dark-700 border-dashed rounded-lg cursor-pointer bg-dark-900">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                                        <p class="mb-2 text-sm text-gray-400"><span class="font-semibold text-primary-400">Klik untuk unggah</span></p>
+                                        <p class="text-xs text-gray-500 file-name">Opsional</p>
+                                    </div>
+                                    <input id="surat_tambahan1" type="file" class="hidden" accept="image/jpeg, image/png, image/jpg">
+                                </label>
+                            </div>
+                            <!-- Surat Tambahan 2 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Surat Tambahan 2</label>
+                                <label for="surat_tambahan2" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-dark-700 border-dashed rounded-lg cursor-pointer bg-dark-900">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                                        <p class="mb-2 text-sm text-gray-400"><span class="font-semibold text-primary-400">Klik untuk unggah</span></p>
+                                        <p class="text-xs text-gray-500 file-name">Opsional</p>
+                                    </div>
+                                    <input id="surat_tambahan2" type="file" class="hidden" accept="image/jpeg, image/png, image/jpg">
+                                </label>
+                            </div>
+                            <!-- Surat Tambahan 3 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Surat Tambahan 3</label>
+                                <label for="surat_tambahan3" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-dark-700 border-dashed rounded-lg cursor-pointer bg-dark-900">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                                        <p class="mb-2 text-sm text-gray-400"><span class="font-semibold text-primary-400">Klik untuk unggah</span></p>
+                                        <p class="text-xs text-gray-500 file-name">Opsional</p>
+                                    </div>
+                                    <input id="surat_tambahan3" type="file" class="hidden" accept="image/jpeg, image/png, image/jpg">
+                                </label>
+                            </div>
+                            <!-- Surat Tambahan 4 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Surat Tambahan 4</label>
+                                <label for="surat_tambahan4" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-dark-700 border-dashed rounded-lg cursor-pointer bg-dark-900">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+                                        <p class="mb-2 text-sm text-gray-400"><span class="font-semibold text-primary-400">Klik untuk unggah</span></p>
+                                        <p class="text-xs text-gray-500 file-name">Opsional</p>
+                                    </div>
+                                    <input id="surat_tambahan4" type="file" class="hidden" accept="image/jpeg, image/png, image/jpg">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Area -->
+                <div id="notification-area" class="hidden rounded-lg p-4 text-sm mt-6 bg-red-500/20 text-red-300"></div>
+
+                <!-- Tombol Submit -->
+                <div class="pt-6 border-t border-dark-700">
+                    <button id="submit-button" type="submit" class="w-full flex justify-center items-center bg-primary-600 text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-500/50 transition-all duration-300">
+                        <span id="button-text">Kirim Pengajuan</span>
+                        <svg id="button-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Popup Sukses -->
+    <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black bg-opacity-70 opacity-0 hidden">
+        <div class="modal-content bg-dark-800 border border-dark-700 rounded-2xl shadow-xl w-full max-w-md p-8 text-center opacity-0 transform scale-95">
+            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-primary-900 border-4 border-primary-700">
+                <svg class="h-10 w-10 text-primary-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="mt-6 text-2xl font-bold leading-6 text-white">Pengajuan Terkirim!</h3>
+            <div class="mt-3">
+                <p class="text-md text-gray-400">
+                    Terima kasih. Data Anda telah berhasil kami terima dan akan segera diproses.
+                </p>
+            </div>
+            <div class="mt-8">
+                <button id="close-modal-button" type="button" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-3 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-800 focus:ring-primary-500 sm:text-sm transition-colors">
+                    Tutup & Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Inisialisasi Supabase
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+
+        // Ganti dengan kredensial Supabase Anda
+        const supabaseUrl = 'https://nkzpjtocjiluknfojmvq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5renBqdG9jamlsdWtuZm9qbXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1OTA1MzUsImV4cCI6MjA1ODE2NjUzNX0.ZKMZ0F1PlJUgxofw3hHkCUYyDYMCuJIgS0NWO0PIhVk';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const form = document.getElementById('form-pengurusan');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const buttonSpinner = document.getElementById('button-spinner');
+        const notificationArea = document.getElementById('notification-area');
+        
+        // Elemen Modal
+        const successModal = document.getElementById('success-modal');
+        const modalContent = successModal.querySelector('.modal-content');
+        const closeModalButton = document.getElementById('close-modal-button');
+
+        // Fungsi untuk menampilkan modal
+        function showSuccessModal() {
+            successModal.classList.remove('hidden');
+            setTimeout(() => {
+                successModal.classList.remove('opacity-0');
+                modalContent.classList.remove('opacity-0', 'scale-95');
+                modalContent.classList.add('opacity-100', 'scale-100');
+            }, 10); // Delay kecil untuk memastikan transisi berjalan
+        }
+
+        // Fungsi untuk menyembunyikan modal
+        function hideSuccessModal() {
+            modalContent.classList.remove('opacity-100', 'scale-100');
+            modalContent.classList.add('opacity-0', 'scale-95');
+            successModal.classList.add('opacity-0');
+            setTimeout(() => {
+                successModal.classList.add('hidden');
+                // Redirect setelah animasi selesai
+                window.location.href = 'done.html';
+            }, 300); // Sesuaikan dengan durasi transisi
+        }
+
+        // Fungsi untuk menampilkan notifikasi error
+        function showNotification(message) {
+            notificationArea.textContent = message;
+            notificationArea.classList.remove('hidden');
+        }
+
+        // Fungsi untuk mengunggah file ke Supabase Storage
+        async function uploadFile(file, folder) {
+            if (!file) return null;
+            // Membuat nama file unik untuk menghindari konflik
+            const fileName = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
+            const path = `${folder}/${fileName}`;
+            const { data, error } = await supabase.storage.from('uploads').upload(path, file);
+            if (error) {
+                console.error('Upload Error:', error);
+                showNotification(`Gagal mengunggah file: ${file.name}. Pesan: ${error.message}`);
+                return null;
+            }
+            return data.path;
+        }
+
+        // Fungsi untuk menangani pengiriman form
+        async function submitForm(event) {
+            event.preventDefault();
+            
+            // Tampilkan status loading
+            buttonText.textContent = 'Mengirim Data...';
+            buttonSpinner.classList.remove('hidden');
+            submitButton.disabled = true;
+            notificationArea.classList.add('hidden');
+
+            const formData = new FormData(form);
+            const nama = formData.get('nama');
+            const nomor_wa = formData.get('nomor_wa');
+            const keperluan = formData.get('keperluan');
+
+            const fileKTP = document.getElementById('foto_ktp').files[0];
+            const fileKK = document.getElementById('foto_kk').files[0];
+            const fileSurat1 = document.getElementById('surat_tambahan1').files[0];
+            const fileSurat2 = document.getElementById('surat_tambahan2').files[0];
+            const fileSurat3 = document.getElementById('surat_tambahan3').files[0];
+            const fileSurat4 = document.getElementById('surat_tambahan4').files[0];
+
+            // Unggah semua file secara paralel untuk efisiensi
+            const [fotoKTPPath, fotoKKPath, surat1Path, surat2Path, surat3Path, surat4Path] = await Promise.all([
+                uploadFile(fileKTP, 'foto_ktp'),
+                uploadFile(fileKK, 'foto_kk'),
+                uploadFile(fileSurat1, 'surat_tambahan1'),
+                uploadFile(fileSurat2, 'surat_tambahan2'),
+                uploadFile(fileSurat3, 'surat_tambahan3'),
+                uploadFile(fileSurat4, 'surat_tambahan4'),
+            ]);
+            
+            // Hentikan proses jika ada file wajib yang gagal diunggah
+            if (!fotoKTPPath || !fotoKKPath) {
+                showNotification('Gagal mengunggah dokumen wajib (KTP/KK). Silakan periksa kembali file Anda dan coba lagi.');
+                buttonText.textContent = 'Kirim Pengajuan';
+                buttonSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+                return;
+            }
+
+            // Kirim data ke tabel Supabase
+            const { data, error } = await supabase.from('pengurusan').insert([
+                { 
+                    nama, 
+                    nomor_wa, 
+                    keperluan, 
+                    foto_ktp: fotoKTPPath, 
+                    foto_kk: fotoKKPath, 
+                    surat_tambahan1: surat1Path, 
+                    surat_tambahan2: surat2Path,
+                    surat_tambahan3: surat3Path, 
+                    surat_tambahan4: surat4Path,
+                }
+            ]).select();
+
+            if (error) {
+                console.error('Insert Error:', error);
+                showNotification(`Terjadi kesalahan saat mengirim data: ${error.message}`);
+                buttonText.textContent = 'Kirim Pengajuan';
+                buttonSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+            } else {
+                console.log('Data berhasil dikirim:', data);
+                showSuccessModal();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Event listener untuk form submission
+            form.addEventListener('submit', submitForm);
+            
+            // Event listener untuk tombol tutup modal
+            closeModalButton.addEventListener('click', hideSuccessModal);
+            // Juga tutup modal jika klik di luar area konten
+            successModal.addEventListener('click', (e) => {
+                if (e.target === successModal) {
+                    hideSuccessModal();
+                }
+            });
+
+            // Mengisi 'keperluan' dari URL parameter
+            const params = new URLSearchParams(window.location.search);
+            const keperluan = params.get('keperluan');
+            if (keperluan) {
+                document.getElementById('keperluan').value = decodeURIComponent(keperluan);
+            } else {
+                 document.getElementById('keperluan').value = "Tidak ada data keperluan";
+            }
+
+            // Script untuk menampilkan nama file yang dipilih
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', (event) => {
+                    const fileName = event.target.files[0] ? event.target.files[0].name : (input.required ? 'Wajib diisi' : 'Opsional');
+                    const label = event.target.closest('label');
+                    const fileNameElement = label.querySelector('.file-name');
+                    fileNameElement.textContent = fileName;
+                    fileNameElement.classList.add('text-primary-400');
+                    if (event.target.files[0]) {
+                        label.classList.add('file-chosen');
+                    } else {
+                        label.classList.remove('file-chosen');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

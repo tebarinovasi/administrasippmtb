@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Administrasi Digital - Kelurahan Teladan Barat</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Menggunakan font Inter sebagai font utama */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1117; /* Warna latar belakang utama yang gelap */
+        }
+        /* Kustomisasi warna aksen hijau */
+        .accent-green {
+            background-color: #238636;
+        }
+        .accent-green-hover:hover {
+            background-color: #2ea043;
+        }
+        /* Kustomisasi tombol sekunder */
+        .btn-secondary {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+        }
+        .btn-secondary:hover {
+            background-color: #30363d;
+        }
+        .text-accent-green {
+            color: #39D353;
+        }
+    </style>
+</head>
+<body class="text-gray-300 antialiased">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-center items-center">
+                <!-- Logo Utama -->
+                <div class="text-lg md:text-xl font-bold">
+                    <span class="text-accent-green">#TEBAR</span><span class="text-white">SIAPDIGITAL</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-cover bg-center bg-no-repeat h-64 md:h-96" style="background-image: url('https://files.catbox.moe/jiaz97.jpg');">
+        <div class="relative container mx-auto px-6 h-full flex justify-center items-center">
+            <!-- Konten di atas gambar bisa ditambahkan di sini jika perlu -->
+        </div>
+    </section>
+
+    <!-- Main Content / Dashboard -->
+    <main id="layanan" class="container mx-auto px-6 py-16 md:py-24 text-center">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Pilih Layanan Anda</h2>
+        <p class="text-gray-400 max-w-3xl mx-auto mb-12">
+            Kami menyediakan platform digital untuk mempermudah proses administrasi. Mulai pengurusan surat Anda sekarang dengan menekan tombol di bawah ini.
+        </p>
+        
+        <!-- Tombol Aksi -->
+        <div class="flex flex-col items-center gap-4">
+            <!-- Tombol Utama -->
+            <a href="/pages/menu.html" class="accent-green accent-green-hover w-full md:w-auto inline-flex items-center justify-center gap-3 text-white font-semibold py-4 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Ajukan Pengurusan Surat Sekarang</span>
+            </a>
+            <!-- Tombol Login Admin -->
+            <a href="/pages/login.html" class="btn-secondary w-full md:w-auto inline-flex items-center justify-center gap-3 text-white font-medium py-3 px-8 rounded-lg transform hover:scale-105 transition-all duration-300 ease-in-out">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Login Admin</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p>&copy; 2025 Layanan Digital Kelurahan Teladan Barat. Semua Hak Cipta Dilindungi.</p>
+            <p class="text-sm mt-2">Didesain ulang untuk pelayanan yang lebih baik.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

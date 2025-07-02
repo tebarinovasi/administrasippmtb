@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Administrasi Kependudukan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Custom scrollbar untuk estetika yang lebih baik */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    /* Gaya untuk modal popup */
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 50;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        max-width: 500px;
+        width: 90%;
+    }
+  </style>
+
+  <script>
+    // Konfigurasi Tailwind CSS dengan palet warna kustom
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            'brand-green': {
+              '50': '#f0fdf4', '100': '#dcfce7', '200': '#bbf7d0',
+              '300': '#86efac', '400': '#4ade80', '500': '#22c55e',
+              '600': '#16a34a', '700': '#15803d', '800': '#166534',
+              '900': '#14532d', '950': '#052e16',
+            },
+          }
+        }
+      }
+    }
+  </script>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+
+    // Inisialisasi Supabase
+    const SUPABASE_URL = 'https://nkzpjtocjiluknfojmvq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5renBqdG9jamlsdWtuZm9qbXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1OTA1MzUsImV4cCI6MjA1ODE2NjUzNX0.ZKMZ0F1PlJUgxofw3hHkCUYyDYMCuJIgS0NWO0PIhVk';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Daftar jenis surat untuk pemetaan
+    const jenisSurat = {
+      'skdu': 'Surat Keterangan Domisili Usaha', 'skdp': 'Surat Keterangan Domisili PT/CV/Yayasan',
+      'spn': 'Surat Pengantar Nikah / NA', 'skds': 'Surat Keterangan Domisili Sementara',
+      'skk': 'Surat Keterangan Kematian', 'saw': 'Surat Pernyataan Ahli Waris',
+      'pbg': 'Surat Pengurusan Persetujuan Bangunan Gedung (PBG)', 'skl': 'Surat Keterangan Lainnya',
+    };
+
+    let lastDataCount = 0;
+    const notificationSound = new Audio('https://files.catbox.moe/fejbgn.mp3');
+    let autoRefreshInterval = null; 
+    let lastRefreshTime = null; 
+
+    // Fungsi untuk mengambil data dari Supabase
+    async function getFormData() {
+      const { data, error } = await supabase.from('pengurusan').select('*').order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching form data:', error);
+        showNotification('Error mengambil data', 'error');
+        return [];
+      }
+      
+      if (lastDataCount > 0 && data.length > lastDataCount) {
+        playNotificationSound();
+        showNotification(`${data.length - lastDataCount} data baru telah masuk!`, 'info');
+      }
+      
+      lastDataCount = data.length;
+      return data;
+    }
+
+    // Fungsi untuk memainkan suara notifikasi
+    function playNotificationSound() {
+      notificationSound.play().catch(err => console.error('Error playing notification sound:', err));
+    }
+
+    // Fungsi untuk setup langganan realtime Supabase
+    function setupRealtimeSubscription() {
+      supabase
+        .channel('pengurusan-changes')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pengurusan' }, payload => {
+          console.log('New entry received!', payload);
+          playNotificationSound();
+          showNotification('Data baru telah masuk!', 'info');
+          refreshData();
+        })
+        .subscribe();
+    }
+
+    // Format tanggal dari timestamp ke format lokal Indonesia
+    function formatDate(timestamp) {
+      if (!timestamp) return '-';
+      return new Date(timestamp).toLocaleDateString('id-ID', {
+        day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    // Fungsi untuk memperbarui timer refresh otomatis
+    function updateRefreshTimer() {
+      if (!lastRefreshTime) return;
+      const timerElement = document.getElementById('refresh-timer');
+      if (!timerElement) return;
+      
+      const updateTimer = () => {
+        const elapsedSeconds = Math.floor((new Date() - lastRefreshTime) / 1000);
+        const remainingSeconds = Math.max(0, 15 - elapsedSeconds);
+        timerElement.textContent = `Refresh dalam ${remainingSeconds}d`;
+        if (remainingSeconds === 0) refreshData();
+      };
+      
+      if (window.timerInterval) clearInterval(window.timerInterval);
+      window.timerInterval = setInterval(updateTimer, 1000);
+      updateTimer();
+    }
+
+    // Fungsi untuk logout
+    window.handleLogout = function() {
+      localStorage.removeItem("adminLoggedIn");
+      window.location.href = "admin-login.html";
+    }
+
+    // Fungsi untuk menampilkan notifikasi global
+    window.showNotification = function(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      const notificationMessage = document.getElementById('notification-message');
+      const notificationIcon = document.getElementById('notification-icon');
+      
+      notificationMessage.textContent = message;
+      notification.classList.remove('hidden', 'translate-x-full');
+      notification.classList.add('translate-x-0');
+      
+      notification.classList.remove('bg-brand-green-700', 'bg-red-600', 'bg-yellow-500');
+      notificationIcon.classList.remove('fa-check-circle', 'fa-times-circle', 'fa-exclamation-triangle');
+
+      if (type === 'error') {
+        notification.classList.add('bg-red-600');
+        notificationIcon.classList.add('fa-times-circle');
+      } else if (type === 'warning') {
+        notification.classList.add('bg-yellow-500');
+        notificationIcon.classList.add('fa-exclamation-triangle');
+      } else {
+        notification.classList.add('bg-brand-green-700');
+        notificationIcon.classList.add('fa-check-circle');
+      }
+      
+      setTimeout(() => {
+        notification.classList.remove('translate-x-0');
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.classList.add('hidden'), 300);
+      }, 4000);
+    }
+
+    // Fungsi untuk memuat ulang data dari server
+    window.refreshData = async function() {
+      showView('dashboard-view');
+      const tableBody = document.getElementById('data-table-body');
+      tableBody.innerHTML = `
+        <tr class="border-b border-slate-200">
+          <td colspan="10" class="px-6 py-8 text-center text-slate-500">
+            <i class="fas fa-spinner fa-spin mr-2 text-brand-green-500"></i> Memperbarui data...
+          </td>
+        </tr>
+      `;
+
+      const formData = await getFormData();
+      populateTable(formData);
+      updateCounts(formData);
+      showNotification('Data berhasil diperbarui');
+
+      lastRefreshTime = new Date();
+      updateRefreshTimer();
+    }
+
+    // Fungsi untuk mengaktifkan/menonaktifkan auto refresh
+    window.toggleAutoRefresh = function() {
+      const toggleButton = document.getElementById('auto-refresh-toggle');
+      const toggleCircle = toggleButton.querySelector('div');
+      
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+        toggleButton.classList.remove('bg-brand-green-600');
+        toggleButton.classList.add('bg-slate-300');
+        toggleCircle.classList.remove('translate-x-6');
+        document.getElementById('refresh-timer-container').classList.add('opacity-0');
+      } else {
+        autoRefreshInterval = setInterval(refreshData, 15000);
+        toggleButton.classList.remove('bg-slate-300');
+        toggleButton.classList.add('bg-brand-green-600');
+        toggleCircle.classList.add('translate-x-6');
+        document.getElementById('refresh-timer-container').classList.remove('opacity-0');
+        lastRefreshTime = new Date();
+        updateRefreshTimer();
+      }
+    }
+    
+    // Fungsi untuk memperbarui jumlah setiap jenis surat pada kartu ringkasan
+    function updateCounts(data) {
+      document.getElementById('total-count').textContent = data.length;
+      const counts = {};
+      Object.keys(jenisSurat).forEach(key => { counts[key] = 0; });
+
+      data.forEach(item => {
+        for (const key in jenisSurat) {
+          if (item.keperluan && item.keperluan.toLowerCase().includes(jenisSurat[key].toLowerCase())) {
+            counts[key]++;
+            break;
+          }
+        }
+      });
+      
+      Object.keys(jenisSurat).forEach(key => {
+        const countElement = document.getElementById(`${key}-count`);
+        if(countElement) countElement.textContent = counts[key] || '0';
+      });
+    }
+
+    // Fungsi untuk mengisi tabel dengan data
+    function populateTable(formData) {
+      const tableBody = document.getElementById('data-table-body');
+      tableBody.innerHTML = '';
+      
+      if (formData.length === 0) {
+        tableBody.innerHTML = `
+          <tr class="border-b border-slate-200">
+            <td colspan="10" class="px-6 py-8 text-center text-slate-500">
+              <i class="fas fa-folder-open fa-2x mb-2 text-slate-400"></i>
+              <p>Belum ada data pengurusan surat yang masuk.</p>
+            </td>
+          </tr>
+        `;
+      } else {
+        formData.forEach((item) => {
+          const row = document.createElement('tr');
+          row.className = "border-b border-slate-200 hover:bg-slate-50 transition-colors duration-200";
+          row.innerHTML = `
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">${item.nama || '-'}</td>
+            <td class="px-6 py-4 text-sm text-slate-600">
+              <a href="https://wa.me/${item.nomor_wa ? item.nomor_wa.replace(/^0/, '62') : ''}" class="hover:text-brand-green-600 hover:underline" target="_blank">${item.nomor_wa || '-'}</a>
+            </td>
+            <td class="px-6 py-4 text-sm text-slate-600 min-w-[200px]">
+              <span class="inline-block w-full px-2.5 py-1 text-xs font-semibold rounded-full ${getKeperluanClass(item.keperluan)}">${item.keperluan || '-'}</span>
+            </td>
+            <td class="px-6 py-4 text-center"><a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.foto_ktp}" class="text-slate-500 hover:text-brand-green-600 transition-colors" target="_blank" title="Lihat KTP"><i class="fas fa-id-card text-lg"></i></a></td>
+            <td class="px-6 py-4 text-center"><a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.foto_kk}" class="text-slate-500 hover:text-brand-green-600 transition-colors" target="_blank" title="Lihat KK"><i class="fas fa-users-rectangle text-lg"></i></a></td>
+            <td class="px-6 py-4 text-center">${item.surat_tambahan1 ? `<a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan1}" class="text-slate-500 hover:text-brand-green-600 transition-colors" target="_blank" title="Dokumen Tambahan 1"><i class="fas fa-file-alt text-lg"></i></a>` : '<span class="text-slate-400">-</span>'}</td>
+            <td class="px-6 py-4 text-center">${item.surat_tambahan2 ? `<a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan2}" class="text-slate-500 hover:text-brand-green-600 transition-colors" target="_blank" title="Dokumen Tambahan 2"><i class="fas fa-file-alt text-lg"></i></a>` : '<span class="text-slate-400">-</span>'}</td>
+            <td class="px-6 py-4 text-center">${item.surat_tambahan3 ? `<a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan3}" class="text-slate-500 hover:text-brand-green-600 transition-colors" target="_blank" title="Dokumen Tambahan 3"><i class="fas fa-file-alt text-lg"></i></a>` : '<span class="text-slate-400">-</span>'}</td>
+            <td class="px-6 py-4 text-center">${item.surat_tambahan4 ? `<a href="${SUPABASE_URL}/storage/v1/object/public/uploads/${item.surat_tambahan4}" class="text-slate-500 hover:text-brand-green-600 transition-colors" target="_blank" title="Dokumen Tambahan 4"><i class="fas fa-file-alt text-lg"></i></a>` : '<span class="text-slate-400">-</span>'}</td>
+            <td class="px-6 py-4 text-sm text-slate-500">${formatDate(item.created_at)}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+    }
+    
+    // Fungsi untuk memberikan warna latar belakang pada jenis keperluan
+    function getKeperluanClass(keperluan) {
+      const k = keperluan ? keperluan.toLowerCase() : '';
+      if (k.includes('domisili usaha')) return 'bg-sky-100 text-sky-800';
+      if (k.includes('domisili pt') || k.includes('cv') || k.includes('yayasan')) return 'bg-indigo-100 text-indigo-800';
+      if (k.includes('nikah')) return 'bg-pink-100 text-pink-800';
+      if (k.includes('domisili sementara')) return 'bg-fuchsia-100 text-fuchsia-800';
+      if (k.includes('kematian')) return 'bg-slate-200 text-slate-800';
+      if (k.includes('ahli waris')) return 'bg-amber-100 text-amber-800';
+      if (k.includes('bangunan') || k.includes('pbg')) return 'bg-orange-100 text-orange-800';
+      return 'bg-green-100 text-green-800';
+    }
+
+    // Fungsi untuk menampilkan view tertentu (Dashboard/Pengaturan)
+    function showView(viewId) {
+        ['dashboard-view', 'pengaturan-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById(viewId).classList.remove('hidden');
+
+        document.querySelectorAll('#sidebar nav a').forEach(link => {
+            link.classList.remove('bg-slate-800', 'text-white');
+            link.querySelector('i').classList.remove('text-brand-green-400');
+        });
+
+        const activeLink = document.getElementById(viewId.replace('-view', '-link'));
+        if (activeLink) {
+            activeLink.classList.add('bg-slate-800', 'text-white');
+            activeLink.querySelector('i').classList.add('text-brand-green-400');
+        }
+    }
+    
+    // Fungsi untuk menghapus semua data pengurusan
+    async function deleteAllRecords() {
+        const { error } = await supabase.from('pengurusan').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (error) {
+            console.error('Error deleting data:', error);
+            showNotification('Gagal menghapus data pengurusan.', 'error');
+        } else {
+            showNotification('Semua data pengurusan berhasil dihapus.', 'info');
+            refreshData();
+        }
+        document.getElementById('delete-confirmation-modal').style.display = 'none';
+    }
+
+    // Fungsi untuk mencari data di tabel
+    function filterTable(searchValue) {
+        const searchTerm = searchValue.toLowerCase();
+        const rows = document.getElementById('data-table-body').getElementsByTagName('tr');
+        if (rows.length > 0 && rows[0].getElementsByTagName('td').length === 1) return;
+
+        for (let i = 0; i < rows.length; i++) {
+            const rowText = rows[i].textContent.toLowerCase();
+            rows[i].style.display = rowText.includes(searchTerm) ? '' : 'none';
+        }
+    }
+    
+    // Event listener saat DOM selesai dimuat
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (localStorage.getItem("adminLoggedIn") !== "true") {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      // --- Pengaturan Elemen Interaktif ---
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const toggleBtn = document.getElementById('sidebar-toggle');
+
+      // Toggle sidebar untuk mobile
+      toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sidebar.classList.toggle('-translate-x-full');
+          overlay.classList.toggle('hidden');
+      });
+
+      // Klik overlay untuk menutup sidebar
+      overlay.addEventListener('click', () => {
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+      });
+
+      // Navigasi menu
+      document.getElementById('dashboard-link').addEventListener('click', (e) => { e.preventDefault(); showView('dashboard-view'); });
+      document.getElementById('pengaturan-link').addEventListener('click', (e) => { e.preventDefault(); showView('pengaturan-view'); });
+
+      // Modal
+      document.getElementById('upload-surat-link').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('upload-surat-modal').style.display = 'flex'; });
+      document.getElementById('close-upload-modal').addEventListener('click', () => { document.getElementById('upload-surat-modal').style.display = 'none'; });
+      document.getElementById('delete-all-button').addEventListener('click', () => { document.getElementById('delete-confirmation-modal').style.display = 'flex'; });
+      document.getElementById('cancel-delete').addEventListener('click', () => { document.getElementById('delete-confirmation-modal').style.display = 'none'; });
+      document.getElementById('confirm-delete').addEventListener('click', deleteAllRecords);
+
+      // Pencarian (Desktop dan Mobile)
+      const searchDesktop = document.getElementById('search-input-desktop');
+      const searchMobile = document.getElementById('search-input-mobile');
+      
+      searchDesktop.addEventListener('keyup', () => {
+          searchMobile.value = searchDesktop.value;
+          filterTable(searchDesktop.value);
+      });
+      searchMobile.addEventListener('keyup', () => {
+          searchDesktop.value = searchMobile.value;
+          filterTable(searchMobile.value);
+      });
+
+      // Inisialisasi awal
+      await refreshData();
+      toggleAutoRefresh(); // Aktifkan auto-refresh saat pertama kali load
+      showNotification('Selamat datang di Dashboard Administrasi');
+      setupRealtimeSubscription();
+      setInterval(updateTime, 1000);
+      updateTime();
+    });
+
+    // Fungsi untuk memperbarui waktu live
+    function updateTime() {
+      const options = { timeZone: "Asia/Jakarta", weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" };
+      const timeElement = document.getElementById("waktu-live");
+      if (timeElement) timeElement.textContent = new Date().toLocaleString("id-ID", options);
+    }
+  </script>
+</head>
+<body class="bg-slate-100 font-sans antialiased">
+  <!-- Notifikasi Global -->
+  <div id="notification" class="hidden fixed top-5 right-5 z-[100] px-5 py-4 rounded-lg shadow-2xl text-white transition-transform duration-300 ease-in-out translate-x-full">
+    <div class="flex items-center">
+      <i id="notification-icon" class="fas fa-check-circle mr-3 text-xl"></i>
+      <p id="notification-message" class="font-medium">Pesan notifikasi.</p>
+    </div>
+  </div>
+
+  <!-- Modal untuk Upload Surat -->
+  <div id="upload-surat-modal" class="modal-backdrop">
+      <div class="modal-content text-center">
+          <h3 class="text-xl font-bold text-slate-800 mb-4">Fitur Dalam Pengembangan</h3>
+          <p class="text-slate-600 mb-6">Fitur ini masih dikembangkan. Anda dapat mengirimkan surat secara manual dengan menekan No. WhatsApp warga pada tabel.</p>
+          <button id="close-upload-modal" class="w-full py-2 px-4 bg-brand-green-600 text-white rounded-lg hover:bg-brand-green-700 font-semibold transition-colors">Tutup</button>
+      </div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus -->
+  <div id="delete-confirmation-modal" class="modal-backdrop">
+      <div class="modal-content">
+          <h3 class="text-xl font-bold text-slate-800 mb-2">Konfirmasi Penghapusan</h3>
+          <p class="text-slate-600 mb-6">Apakah Anda yakin ingin menghapus SEMUA data pengurusan? Tindakan ini tidak dapat diurungkan.</p>
+          <div class="flex justify-end space-x-4">
+              <button id="cancel-delete" class="py-2 px-4 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 font-semibold">Batal</button>
+              <button id="confirm-delete" class="py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold">Ya, Hapus Semua</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Overlay untuk sidebar mobile -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 transform -translate-x-full lg:overflow-y-auto transition-transform duration-200 ease-in-out flex-shrink-0 w-64 bg-slate-900 text-slate-300 flex flex-col">
+      <!-- Logo dan Judul Sidebar -->
+      <div class="p-4 flex items-center justify-center border-b border-slate-800">
+        <img src="https://files.catbox.moe/nryt6l.png" alt="Logo 1" class="h-12 w-10 mr-2">
+        <div>
+          <h1 class="text-lg font-bold text-white">PPMTB PANEL</h1>
+          <p class="text-xs text-slate-400">#TEBARSIAPDIGITAL</p>
+        </div>
+      </div>
+      
+      <!-- Menu Navigasi -->
+      <nav class="mt-5 px-2 flex-grow">
+        <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Utama</p>
+        <a href="#" id="dashboard-link" class="flex items-center py-2.5 px-3 mb-1 text-sm font-medium text-white bg-slate-800 rounded-lg"><i class="fas fa-tachometer-alt w-5 mr-3 text-brand-green-400"></i> Dashboard</a>
+        <a href="#" id="upload-surat-link" class="flex items-center py-2.5 px-3 mb-1 text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"><i class="fas fa-upload w-5 mr-3 text-slate-400"></i> Upload Surat</a>
+        <p class="px-2 mt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Lainnya</p>
+        <a href="#" id="pengaturan-link" class="flex items-center py-2.5 px-3 mb-1 text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"><i class="fas fa-cog w-5 mr-3 text-slate-400"></i> Pengaturan</a>
+      </nav>
+      
+      <!-- Footer Sidebar -->
+      <div class="p-4 border-t border-slate-800">
+        <p id="waktu-live" class="text-xs text-center text-slate-400 mb-3"></p>
+        <button onclick="handleLogout()" class="w-full py-2 px-4 bg-brand-green-600 text-white rounded-lg hover:bg-brand-green-700 font-semibold transition-colors flex items-center justify-center"><i class="fas fa-sign-out-alt mr-2"></i> Logout</button>
+      </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+      <!-- Header Utama -->
+      <header class="sticky top-0 bg-white/80 backdrop-blur-sm z-30">
+        <div class="border-b border-slate-200">
+          <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+              <!-- Header: Sisi Kiri -->
+              <div class="flex items-center">
+                <button id="sidebar-toggle" class="lg:hidden text-slate-500 hover:text-slate-600 mr-4">
+                  <span class="sr-only">Buka menu</span>
+                  <i class="fas fa-bars text-xl"></i>
+                </button>
+                <!-- Pencarian Desktop -->
+                <div class="relative hidden md:block">
+                  <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                  <input id="search-input-desktop" type="text" placeholder="Cari nama atau jenis surat..." class="py-2 pl-10 pr-4 w-64 lg:w-96 bg-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-green-500 transition-all">
+                </div>
+              </div>
+              <!-- Header: Sisi Kanan -->
+              <div class="flex items-center space-x-3">
+                <div class="flex items-center">
+                  <label for="auto-refresh-toggle" class="hidden sm:inline text-sm font-medium text-slate-600 mr-2">Auto</label>
+                  <button id="auto-refresh-toggle" onclick="toggleAutoRefresh()" class="w-12 h-6 flex items-center bg-brand-green-600 rounded-full p-1 transition-all duration-300 ease-in-out flex-shrink-0">
+                    <div class="bg-white w-4 h-4 rounded-full shadow-md transform translate-x-6 transition-transform duration-300 ease-in-out"></div>
+                  </button>
+                </div>
+                <div id="refresh-timer-container" class="hidden lg:block transition-opacity duration-300"><span id="refresh-timer" class="text-sm text-slate-500"></span></div>
+                <button onclick="refreshData()" class="text-slate-500 hover:text-brand-green-600 transition-colors" title="Refresh Sekarang"><i class="fas fa-sync-alt text-lg"></i></button>
+                <a href="https://wa.me/6281234567890" target="_blank" class="hidden sm:block text-slate-500 hover:text-brand-green-600 transition-colors" title="Hubungi Bantuan"><i class="fas fa-headset text-xl"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Pencarian Mobile -->
+        <div class="px-4 sm:px-6 md:hidden border-b border-slate-200">
+            <div class="relative py-3">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                <input id="search-input-mobile" type="text" placeholder="Cari data..." class="w-full py-2 pl-10 pr-4 bg-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-green-500 transition-all">
+            </div>
+        </div>
+      </header>
+      
+      <!-- View Dashboard -->
+      <div id="dashboard-view">
+        <main class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+          <h1 class="text-2xl md:text-3xl text-slate-800 font-bold mb-6">Dashboard Pengurusan Surat</h1>
+          <!-- Kartu Ringkasan -->
+          <div class="mb-8">
+            <h2 class="text-xl font-semibold text-slate-800 mb-4">Ringkasan Dokumen</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <!-- Item Kartu -->
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-green-100 text-green-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-file-alt text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Total Pengajuan</p><h3 id="total-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-sky-100 text-sky-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-building text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Domisili Usaha</p><h3 id="skdu-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-indigo-100 text-indigo-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-landmark text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Domisili PT/CV</p><h3 id="skdp-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-pink-100 text-pink-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-heart text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Pengantar Nikah</p><h3 id="spn-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-fuchsia-100 text-fuchsia-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-home text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Domisili Sementara</p><h3 id="skds-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-slate-200 text-slate-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-cross text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Keterangan Kematian</p><h3 id="skk-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-amber-100 text-amber-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-users text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Ahli Waris</p><h3 id="saw-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-orange-100 text-orange-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-city text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Persetujuan Bangunan</p><h3 id="pbg-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+              <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-start space-x-4 shadow-sm hover:shadow-md transition-shadow"><div class="bg-green-100 text-green-600 rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><i class="fas fa-file-signature text-lg"></i></div><div><p class="text-sm font-medium text-slate-500">Keterangan Lainnya</p><h3 id="skl-count" class="text-2xl font-bold text-slate-800">0</h3></div></div>
+            </div>
+          </div>
+          <!-- Tabel Data -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <header class="px-6 py-4 border-b border-slate-200"><h2 class="font-semibold text-slate-800">Daftar Pengajuan Surat Masuk</h2></header>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+                  <tr>
+                    <th class="px-6 py-3">Nama Pemohon</th><th class="px-6 py-3">Nomor WA</th>
+                    <th class="px-6 py-3">Jenis Keperluan</th><th class="px-6 py-3 text-center">KTP</th>
+                    <th class="px-6 py-3 text-center">KK</th><th class="px-6 py-3 text-center">Dok. 1</th>
+                    <th class="px-6 py-3 text-center">Dok. 2</th><th class="px-6 py-3 text-center">Dok. 3</th>
+                    <th class="px-6 py-3 text-center">Dok. 4</th><th class="px-6 py-3">Tanggal Masuk</th>
+                  </tr>
+                </thead>
+                <tbody id="data-table-body" class="divide-y divide-slate-200">
+                  <tr><td colspan="10" class="px-6 py-8 text-center text-slate-500"><i class="fas fa-spinner fa-spin mr-2 text-brand-green-500"></i> Memuat data awal...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- View Pengaturan -->
+      <div id="pengaturan-view" class="hidden">
+        <main class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+            <h1 class="text-2xl md:text-3xl text-slate-800 font-bold mb-6">Pengaturan</h1>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <header class="px-6 py-4 border-b border-slate-200"><h2 class="font-semibold text-slate-800">Manajemen Data</h2></header>
+                <div class="p-6">
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                        <div class="flex"><div class="py-1"><i class="fas fa-exclamation-triangle text-red-500 mr-3"></i></div>
+                            <div>
+                                <p class="font-bold text-red-800">Hapus Semua Data Pengurusan</p>
+                                <p class="text-sm text-red-700">Tindakan ini akan menghapus semua data pengajuan surat yang ada di database secara permanen. Pastikan Anda sudah yakin sebelum melanjutkan.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 text-right"><button id="delete-all-button" class="py-2 px-5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">Hapus Semua Data</button></div>
+                </div>
+            </div>
+        </main>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

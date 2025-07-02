@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Administrasi Profesional - Teladan Barat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A; /* slate-900 */
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5); /* slate-800 with opacity */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.5); /* slate-700 with opacity */
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), 0 0 30px rgba(34, 197, 94, 0.3);
+        }
+        .aspect-w-16 {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        }
+        .aspect-w-16 > * {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen">
+
+    <!-- Navbar -->
+    <header class="bg-slate-900/70 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-800">
+        <nav class="container mx-auto px-6 py-4 flex justify-center items-center">
+            <div class="flex items-center space-x-3">
+                <img src="https://files.catbox.moe/nryt6l.png" alt="Logo PPMTB" class="h-10" onerror="this.style.display='none'">
+                <img src="https://files.catbox.moe/yips7h.png" alt="Logo Medan" class="h-9" onerror="this.style.display='none'">
+                <img src="https://files.catbox.moe/9e0wqv.png" alt="Logo Lain" class="h-6" onerror="this.style.display='none'">
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3">Selamat Datang</h1>
+            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto">Platform digital untuk mempermudah semua kebutuhan administrasi Anda di Kelurahan Teladan Barat.</p>
+        </section>
+
+        <!-- Pemberitahuan Penting & Video -->
+        <section class="glass-card rounded-2xl p-6 md:p-8 mb-12 border-l-4 border-green-400">
+            <div class="flex flex-col md:flex-row md:items-center gap-6">
+                <div class="flex-shrink-0 text-center md:text-left">
+                     <i class="fa-solid fa-circle-info fa-3x text-green-400 mb-2"></i>
+                    <h2 class="text-2xl font-bold text-white mb-2">Penting!</h2>
+                    <p class="text-slate-300">Harap tonton video panduan singkat berikut sebelum melanjutkan pengisian formulir.</p>
+                </div>
+                <div class="w-full md:w-2/3 mx-auto">
+                    <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-2xl shadow-green-500/10">
+                         <video controls class="w-full h-full object-cover">
+                            <source src="https://serveranda.com/video-panduan.mp4" type="video/mp4">
+                            Browser Anda tidak mendukung tag video.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid Layanan -->
+        <section>
+            <h2 class="text-3xl font-bold text-center text-white mb-8">Pilih Layanan Anda</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+
+                <!-- Template Kartu Layanan -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Surat Pernyataan Kosong</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        Unduh template Surat Pernyataan Kosong untuk dicetak dan digunakan dalam berbagai keperluan administrasi.
+                    </p>
+                    <a href="/SKKTEBAR.docx" download class="mt-auto w-full text-center bg-green-500 text-slate-900 font-bold px-5 py-3 rounded-lg hover:bg-green-400 transition-colors duration-300">
+                        <i class="fa-solid fa-download mr-2"></i>Download
+                    </a>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Ket. Domisili Usaha</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        <strong>Syarat:</strong> KTP & KK pemilik, foto tempat usaha, Surat Pernyataan (materai 10rb) diketahui Kepling & 2 saksi, KTP 2 saksi.
+                    </p>
+                    <a href="form.html?keperluan=Surat Keterangan Domisili Usaha" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Ket. Domisili PT/CV/Yayasan</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        <strong>Syarat:</strong> KTP & KK penanggungjawab, Akta Pendirian, foto plank, Surat Pernyataan (materai 10rb) diketahui Kepling & 2 saksi, KTP 2 saksi.
+                    </p>
+                    <a href="form.html?keperluan=Surat Keterangan Domisili PT/CV/Yayasan" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Surat Pengantar Nikah / NA</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        <strong>Syarat:</strong> KTP, KTP & KK Orang Tua, Pasfoto 3x4 (2 lbr), Surat Pernyataan (materai 10rb) diketahui Kepling & 2 saksi, KTP 2 saksi.
+                    </p>
+                    <a href="form.html?keperluan=Surat Pengantar Nikah / NA" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Ket. Domisili Sementara</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        <strong>Syarat:</strong> KTP, KK, Surat Pengantar dari daerah asal, Surat Pernyataan (materai 10rb) diketahui Kepling & 2 saksi, KTP 2 saksi.
+                    </p>
+                    <a href="form.html?keperluan=Surat Keterangan Domisili Sementara" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Surat Keterangan Kematian</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        <strong>Syarat:</strong> KTP & KK almarhum/ah, foto nisan, Surat Pernyataan (materai 10rb) diketahui Kepling & 2 saksi, KTP 2 saksi.
+                    </p>
+                    <a href="form.html?keperluan=Surat Keterangan Kematian" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift sm:col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Surat Pernyataan Ahli Waris</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        Proses ini memerlukan kelengkapan dokumen yang detail. Silakan klik untuk melihat daftar lengkap dan memulai pengurusan.
+                    </p>
+                    <a href="form.html?keperluan=Surat Pernyataan Ahli Waris" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Lihat Detail & Urus
+                    </a>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Pengurusan PBG</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        <strong>Syarat:</strong> KTP pemilik, Surat/Akta tanah, denah bangunan, PBB terbaru, surat permohonan.
+                    </p>
+                    <a href="form.html?keperluan=Surat Pengurusan Persetujuan Bangunan Gedung" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 flex flex-col h-full hover-lift">
+                    <h3 class="text-xl font-bold text-green-400 mb-3">Surat Keterangan Lainnya</h3>
+                    <p class="text-slate-400 text-sm flex-grow mb-4">
+                        Untuk keperluan surat keterangan lain yang tidak tercantum di atas. Siapkan KTP, KK, dan Surat Pernyataan.
+                    </p>
+                    <a href="form.html?keperluan=Surat Keterangan Lainnya" class="mt-auto w-full text-center bg-slate-700 text-white font-bold px-5 py-3 rounded-lg hover:bg-slate-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-right mr-2"></i>Mulai Pengurusan
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Bantuan -->
+        <section class="mt-16 text-center bg-slate-800/50 rounded-2xl p-8">
+             <h2 class="text-2xl font-bold text-white mb-3">Perlu Bantuan Langsung?</h2>
+            <p class="text-slate-400 mb-6 max-w-2xl mx-auto">Jika Anda mengalami kendala atau memiliki pertanyaan, jangan ragu untuk menghubungi Kepala Lingkungan Anda.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                
+                <!-- Kepling I -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Nur Akmal</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling I</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Karya Bakti No. 17</p>
+                    <a href="https://wa.me/6282328406019" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>082328406019
+                    </a>
+                </div>
+
+                <!-- Kepling II -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Isdawati</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling II</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. SM Raja No. 32-A</p>
+                    <a href="https://wa.me/6281265873996" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>081265873996
+                    </a>
+                </div>
+
+                <!-- Kepling III -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Zulkifli Nasution</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling III</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. SM Raja Gg. Jati I No 16-A</p>
+                    <a href="https://wa.me/6281360166681" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>081360166681
+                    </a>
+                </div>
+
+                <!-- Kepling IV -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Rony Situmeang</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling IV</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Tapian Nauli No. 64</p>
+                    <a href="https://wa.me/6285926846868" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>085926846868
+                    </a>
+                </div>
+
+                <!-- Kepling V -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Elly Susanti</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling V</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Asrama No. 8</p>
+                    <a href="https://wa.me/6282171436998" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>082171436998
+                    </a>
+                </div>
+
+                <!-- Kepling VI -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Dewi Sartika Tanjung</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling VI</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Teladan No. 6</p>
+                    <a href="https://wa.me/6285210556658" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>085210556658
+                    </a>
+                </div>
+
+                <!-- Kepling VII -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Mhd Evin Barus, SH, MH</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling VII</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Aman I No. 54</p>
+                    <a href="https://wa.me/6281265999939" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>081265999939
+                    </a>
+                </div>
+
+                <!-- Kepling VIII -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Widodo</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling VIII</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Tapian Nauli No. 86</p>
+                    <a href="https://wa.me/6285362134578" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>085362134578
+                    </a>
+                </div>
+
+                <!-- Kepling IX -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Taufik Arrahman</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling IX</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Baru No. 2</p>
+                    <a href="https://wa.me/6281287133322" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>081287133322
+                    </a>
+                </div>
+
+                <!-- Kepling X -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Maria Br Simanjuntak</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling X</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Tapian Nauli No. 11</p>
+                    <a href="https://wa.me/628126407768" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>08126407768
+                    </a>
+                </div>
+
+                <!-- Kepling XI -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Agus Tito Sori Muda Pane</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling XI</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. Sempurna No. 19</p>
+                    <a href="https://wa.me/6281397764344" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>081397764344
+                    </a>
+                </div>
+
+                <!-- Kepling XII -->
+                <div class="glass-card rounded-lg p-4 flex flex-col">
+                    <h4 class="font-bold text-white text-lg">Putra Satria Utama</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling XII</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. SM Raja Gg. Mesjid No. 15</p>
+                    <a href="https://wa.me/6282617143496" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>082617143496
+                    </a>
+                </div>
+
+                <!-- Kepling XIII -->
+                <div class="glass-card rounded-lg p-4 flex flex-col md:col-span-2 lg:col-span-1 lg:mx-auto">
+                    <h4 class="font-bold text-white text-lg">Awal Jauhari</h4>
+                    <p class="text-sm text-green-400 font-semibold">Kepling XIII</p>
+                    <p class="text-sm text-slate-300 mt-2 flex-grow"><i class="fa-solid fa-map-marker-alt w-4 mr-1 text-slate-400"></i>Jl. SM Raja Gg. Perhubungan No. 10-B</p>
+                    <a href="https://wa.me/6281361201684" target="_blank" class="text-sm text-green-400 hover:text-green-300 mt-2 inline-block font-medium">
+                        <i class="fa-brands fa-whatsapp w-4 mr-1"></i>081361201684
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 mt-12">
+        <div class="container mx-auto px-6 py-4 text-center text-slate-500 text-sm">
+            <p>&copy; 2024 Layanan Administrasi Kelurahan Teladan Barat. All Rights Reserved.</p>
+        </div>
+    </footer>
+    
+</body>
+</html>
